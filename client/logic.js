@@ -1,5 +1,7 @@
 const socket = io("http://localhost:3001")
 
+
+var chatForm = document.getElementById('chat-form');
 var form = document.getElementById("chat-form");
 var input = document.getElementById("msg");
 
@@ -8,7 +10,13 @@ socket.on('message', message=> {
     console.log(message);
     outputMessage(message);
 
+
+    //scroll down 
+     chatMessages.scrollTop = chatMessages.scrollUpp;
   });
+
+
+  //message submit
 
 form.addEventListener('submit', function(e){
     e.preventDefault();
@@ -17,6 +25,13 @@ form.addEventListener('submit', function(e){
         outputMessage(`User: ${message}`)
         socket.emit('chatMessages', message);
         input.value = '';
+
+        //clear input
+
+        e.target.elements.msg.value ='',
+        e.target.elements.msg.focus();
+
+
 
 })
 
