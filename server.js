@@ -19,33 +19,16 @@ const port = 3001;
 
 app.use("/", express.static("./client"))
 
-/* app.get(`/:username`, async function (req, res) {
-  const url =
-      'https://localhost:3001/';
-  const options = {
-      method: 'GET',
-      headers: {
-        "Content-Type" : "application/json"
-      }
-  };
+//fetch external api
+const url = "https://pixabay.com/api/?key=27810659-a3dc498df919a5ca1eb2a21d3&image_type=photo&id=73424"
 
-  // promise syntax
- fetch(url, options)
- .then(res => res.json())
- .then(body=>username = body.username)
- .then(()=>console.log(username))
+let imageURL
+fetch(url)
+.then(res => res.json())
+.then(body=> imageURL = body.hits[0].userImageURL)
+.then(()=>console.log(imageURL)) 
+.catch(err => console.error('error:' + err)); 
 
- .catch(err => console.error('error:' + err));  
-
-  try {
-      let response =  await fetch(url, options);
-      response = await response.json();
-      res.status(200).json(response);
-  } catch (err) {
-      console.log(err);
-      res.status(500).json({msg: `Internal Server Error.`});
-  } 
-}); */
 
 // create user
 const users = [];
@@ -113,6 +96,10 @@ io.on("connection", (socket) => {
       console.log(user.username, msg);
      //socket.broadcast.emit("message", msg);
      io.in(user.room).emit("message", formatMessage(user.username, msg));
+
+      if(msg="/gif"){
+      socket.emit("command", imageURL)
+     } 
     })
     
     // Disconnection
