@@ -29,6 +29,15 @@ fetch(url)
 .then(()=>console.log(imageURL)) 
 .catch(err => console.error('error:' + err)); 
 
+const url2 = "https://pixabay.com/api/?key=27810659-a3dc498df919a5ca1eb2a21d3&image_type=photo&id=2639738"
+
+let imageURL2
+fetch(url2)
+.then(res => res.json())
+.then(body=> imageURL2 = body.hits[0].previewURL)
+.then(()=>console.log(imageURL2)) 
+.catch(err => console.error('error:' + err)); 
+
 
 // create user
 const users = [];
@@ -97,7 +106,11 @@ io.on("connection", (socket) => {
      //socket.broadcast.emit("message", msg);
      if(msg==="/gif"){
      io.in(user.room).emit("command", {user:user.username, url:imageURL})
-     }else{
+     }     
+     else if(msg==="/emoji"){
+      io.in(user.room).emit("command", {user:user.username, url:imageURL2})
+      }
+     else{
      io.in(user.room).emit("message", formatMessage(user.username, msg));
     }
     })

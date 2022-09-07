@@ -39,9 +39,9 @@ form.addEventListener('submit', function(e){
 })
 
 socket.on('command', (gif)=>{
-  chatMessages.innerHTML =  `
+  chatMessages.innerHTML +=  `
   <h3>${gif.user}:</h3>
-  <img src=${gif.url} width=100px height=100px> `;
+  <img src=${gif.url} width=130px height=130px> `;
 }) 
 
 function outputMessage(message) {
