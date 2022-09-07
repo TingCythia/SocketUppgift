@@ -1,31 +1,22 @@
+const socket = io("http://localhost:3001")
 
-const socket = io(/* Url till backendserver */);
-
-
-/*
-
-const messageContainer = document.getElementById('message-container')
-const messageForm = document.getElementById('send-container')
-
-*/
-
-const messageInput = document.getElementById('message-input')
-
-
-const chatForm = document.getElementById('chat-form');
+var form = document.getElementById("chat-form");
+var input = document.getElementById("msg");
 const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
 
-// Get username and room from URL
-const { username, room } = Qs.parse(location.search, {
-  ignoreQueryPrefix: true,
-});
+// get userroom and name from URL
+const queryString = window.location.search;
+console.log(queryString);
+const urlParams = new URLSearchParams(queryString);
+const username= urlParams.get('username')
+console.log(username);
+let room = urlParams.get('room')
+console.log(room);
 
-
-
-
-
+// Join chatroom
+socket.emit('joinRoom', {username, room });
 
 // Get room and users
 socket.on('roomUsers', ({ room, users }) => {
@@ -33,62 +24,52 @@ socket.on('roomUsers', ({ room, users }) => {
   outputUsers(users);
 });
 
-//document.querySelector(".form-control")
+// Message from server
+socket.on('message',(message)=> {
+    outputMessage( message);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
 
-const name = prompt('What is your name?')
-appendMessage('You joined')
-socket.emit('new-user', name)
+ socket.on('command', gif=>{
+  chatMessages.innerHTML = `<img src=${gif} width=100px height=100px> `;
+}) 
 
-socket.on('chat-message', data => {
-  appendMessage(`${data.name}: ${data.message}`)
+form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const msg =input.value;
+        socket.emit('chatMessages',msg);
+        input.value = '';
+
 })
 
-socket.on('user-connected', name => {
-  appendMessage(`${name} connected`)
-})
 
-socket.on('user-disconnected', name => {
-  appendMessage(`${name} disconnected`)
-})
+function outputMessage(message) {
 
+    const div = document.createElement('div');
+    div.classList.add('message');
+    const p = document.createElement('p');
+    p.classList.add('meta');
+    p.innerText =message.username;
+    div.appendChild(p);  
+    const para = document.createElement('p');
+    para.classList.add('text');
+    para.innerText = message.text;
+    div.appendChild(para);
+    document.querySelector('.chat-messages').append(div);
 
-socket.on('new userJoin', name => {
-  appendMessage(`${name} disconnected`)
-})
+  }
 
-messageForm.addEventListener('submit', e => {
-  e.preventDefault()
-  const message = messageInput.value
-  appendMessage(`You: ${message}`)
-  socket.emit('send-chat-message', message)
-  messageInput.value = ''
-})
-
-function appendMessage(message) {
-  const messageElement = document.createElement('div')
-  messageElement.innerText = message
-  messageContainer.append(messageElement)
+  // Add room name to DOM
+function outputRoomName(room) {
+  roomName.innerText = room;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-  
-
-
-
+// Add users to DOM
+function outputUsers(users) {
+  userList.innerHTML = '';
+  users.forEach((user) => {
+    const li = document.createElement('li');
+    li.innerText = user.username;
+    userList.appendChild(li);
+  });
+}
