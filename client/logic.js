@@ -30,18 +30,19 @@ socket.on('message',(message)=> {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 
- socket.on('command', gif=>{
-  chatMessages.innerHTML = `<img src=${gif} width=100px height=100px> `;
-}) 
 
 form.addEventListener('submit', function(e){
     e.preventDefault();
     const msg =input.value;
         socket.emit('chatMessages',msg);
         input.value = '';
-
 })
 
+socket.on('command', (gif)=>{
+  chatMessages.innerHTML =  `
+  <h3>${gif.user}:</h3>
+  <img src=${gif.url} width=100px height=100px> `;
+}) 
 
 function outputMessage(message) {
 
