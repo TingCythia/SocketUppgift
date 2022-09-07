@@ -95,11 +95,11 @@ io.on("connection", (socket) => {
       const user = getCurrentUser(socket.id);
       console.log(user.username, msg);
      //socket.broadcast.emit("message", msg);
+     if(msg==="/gif"){
+     io.in(user.room).emit("command", {user:user.username, url:imageURL})
+     }else{
      io.in(user.room).emit("message", formatMessage(user.username, msg));
-
-      if(msg="/gif"){
-      socket.emit("command", imageURL)
-     } 
+    }
     })
     
     // Disconnection
