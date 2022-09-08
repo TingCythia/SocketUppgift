@@ -34,16 +34,17 @@
         <div class="chat-messages"></div>
       </main>
       <div class="chat-form-container">
-        <form id="chat-form">
+        <form id="chat-form" autocomplete="off">
           <input
             id="msg"
             type="text"
             placeholder="Enter Message"
-            required
-            autocomplete="off"
-          />
+            required         
+            onKeyUp="showResults(this.value)"
+          /> 
           <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
-        </form>
+        </form> 
+        <div id="result"></div>
       </div>
     </div>
 
