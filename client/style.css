@@ -191,3 +191,20 @@ a {
 		display: none;
 	}
 }
+
+#result {
+	background-color: #e0e9e0;
+	color: #040303;
+    width: 7rem;
+  }
+  #result ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+  }
+  #result ul li {
+	padding: 5px 0;
+  }
+  #result ul li:hover {
+	background: rgb(163, 228, 186);
+  }

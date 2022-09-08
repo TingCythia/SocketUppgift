@@ -30,6 +30,35 @@ socket.on('message',(message)=> {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 
+const search_terms = ['/gif', '/emoji'];
+const res = document.getElementById("result");
+function autocompleteMatch(input) {
+  if (input == '') {
+    return [];
+  }
+  var reg = new RegExp(input)
+  return search_terms.filter(function(term) {
+	  if (term.match(reg)) {
+  	  return term;
+	  }
+  });
+}
+function showResults(val) {
+  res.innerHTML = '';
+  let list = '';
+  let terms = autocompleteMatch(val);
+  for (i=0; i<terms.length; i++) {
+    list += '<li>' + terms[i] + '</li>';
+  }
+  res.innerHTML = '<ul>' + list + '</ul>';
+}
+
+res.onclick = function (event) {
+  const setValue = event.target.innerText;
+  input.value = setValue;
+  this.innerHTML = "";
+};
+
 
 form.addEventListener('submit', function(e){
     e.preventDefault();
