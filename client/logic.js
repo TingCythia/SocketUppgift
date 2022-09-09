@@ -30,6 +30,7 @@ socket.on('message',(message)=> {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 
+//input value with command line
 const search_terms = ['/gif', '/emoji'];
 const res = document.getElementById("result");
 function autocompleteMatch(input) {
@@ -58,8 +59,9 @@ res.onclick = function (event) {
   input.value = setValue;
   this.innerHTML = "";
 };
+//end of input value with commandline
 
-
+//send message event 
 form.addEventListener('submit', function(e){
     e.preventDefault();
     const msg =input.value;
