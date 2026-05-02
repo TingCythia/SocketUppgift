@@ -1,19 +1,249 @@
-# SocketUppgift
- 
-For this school project´s goal is understanding how to use Socketio in a realtime chat application. 
-This project was built by Nodejs, Express and Socketio with Vanila Javascript. 
+# ChatFlow
 
-First step is npm install all the dependencies : cors, express, http, node-fetch , nodemon, socket.io; In the package.json add "type":"module" as the whole files type.
+ChatFlow is a real-time temporary chat room demo built with React, TypeScript, Tailwind CSS, Node.js, Express, and Socket.IO.
 
-After all setup, start to create 2 main files to contain server and client, in server.js setup the port is 3001, and the app will use express.static method to connect with client file. Later on add io connection between client and server. And also built standard structure with Socket.io.
-Idea from socket.io website's documentation. 
+Users can join a live room by entering:
 
-Hard code was done, start to work on client file. First was created index.html for the login page, chat.html for the chatpage. Add some css. Client js file is logic.js. 
+- a username
+- the room owner's name
+- the room name
 
-On server.js start to test socket.on("connection") and socket.on("disconnect") whether works well. From client.js start to emit message in the input field to server.js, server.js received request from client will responde back to all client sides by using socket.broadcast.emit. Test is all good by sending each other messages. 
+Messages are delivered in real time and are not saved to a database.
 
-Second main step was queried the username and joinroom information by using URLSearchParams function, after fetched params from url and emit the information to server. Server will pushed the username and room together with socket.id, so socket adatper generate new id everytime someone login and join the room. Created io.to().emit broacast all the messages back to the current users with the room they are in. Room and nickname all done, moving to Fetch external API get some free images from Pixabay, and when typing messages, if type "/" will give 2 options which fetched the 2 images which name "/gif" and "/emoji". People can have 2 options to send their images by a command line. 
+## Features
 
-The last step was if someone left, others will receive notification message in their window. 
+- Real-time chat with Socket.IO
+- Custom room names
+- Room owner + room name matching
+- Online user list
+- Responsive React UI
+- Tailwind CSS styling
+- No account required
+- No chat history stored
 
-All the studies learned the connections interation between client and server. All the method used is simple way, understand the basic foundation first then can go deeper.
+## Tech Stack
+
+- React
+- TypeScript
+- Tailwind CSS
+- Vite
+- Node.js
+- Express
+- Socket.IO
+
+## Important Demo Note
+
+This is a portfolio/demo project, not a secure private messenger.
+
+Messages are live only and are not stored. Anyone who knows the exact room owner and room name can join that room while the server is running.
+
+Room owner and room name are case-sensitive:
+
+```text
+Cynthia / Study
+cynthia / Study
+Cynthia / study
+```
+
+These are treated as different rooms.
+
+## Requirements
+
+Install Node.js before running the project.
+
+Recommended:
+
+```text
+Node.js 20+
+npm 10+
+```
+
+## Local Setup
+
+Clone the repository:
+
+```bash
+git clone <repository-url>
+cd <repository-folder>
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Optional environment setup:
+
+```bash
+cp .env.example .env
+```
+
+The core chat demo does not require an API key. `PIXABAY_API_KEY` is only used for the optional `/gif` and `/emoji` commands.
+
+## Run In Development
+
+Start the backend server:
+
+```bash
+npm run dev:server
+```
+
+In a second terminal, start the React frontend:
+
+```bash
+npm run dev:client
+```
+
+Open the frontend in your browser:
+
+```text
+http://localhost:5173
+```
+
+The backend runs on:
+
+```text
+http://localhost:3001
+```
+
+## How To Test The Chat
+
+Open two browser tabs at:
+
+```text
+http://localhost:5173
+```
+
+In both tabs, enter the same room owner and room name.
+
+Example:
+
+```text
+Username: Alice
+Room owner: Cynthia
+Room name: study-room
+```
+
+Second tab:
+
+```text
+Username: Bob
+Room owner: Cynthia
+Room name: study-room
+```
+
+Now Alice and Bob should see each other in the online user list and can chat in real time.
+
+## Testing From Another Device On The Same Network
+
+Start both development servers:
+
+```bash
+npm run dev:server
+npm run dev:client
+```
+
+Find your computer's local IP address.
+
+Then another device on the same Wi-Fi can open:
+
+```text
+http://YOUR_LOCAL_IP:5173
+```
+
+Example:
+
+```text
+http://192.168.1.25:5173
+```
+
+Both users must enter the exact same room owner and room name.
+
+If the second device cannot connect, check your firewall settings and make sure ports `5173` and `3001` are allowed on your computer.
+
+## Build For Production
+
+Create a production build:
+
+```bash
+npm run build
+```
+
+Start the production server:
+
+```bash
+npm start
+```
+
+The Express server serves the built React app from:
+
+```text
+client/dist
+```
+
+## Suggested Deployment
+
+This app can be deployed on a small VPS or cloud server that supports Node.js and WebSockets.
+
+Examples:
+
+- Alibaba Cloud Simple Application Server
+- Render
+- Railway
+- Fly.io
+- DigitalOcean
+
+For a VPS deployment, a common setup is:
+
+```text
+Browser -> HTTPS domain -> Nginx -> Node.js app
+```
+
+The Node.js app can run on an internal port such as `3001`, while Nginx serves the public domain over `80` and `443`.
+
+## Security Notes
+
+This demo intentionally does not store chat messages.
+
+Before using it as a public production app, add:
+
+- rate limiting
+- message length validation
+- stricter CORS settings
+- HTTPS
+- environment variables for secrets
+- moderation or abuse controls
+- optional room passwords or invite codes
+
+## Available Scripts
+
+```bash
+npm run dev:server
+```
+
+Runs the Express and Socket.IO backend with Nodemon.
+
+```bash
+npm run dev:client
+```
+
+Runs the Vite React development server.
+
+```bash
+npm run typecheck
+```
+
+Runs TypeScript checks.
+
+```bash
+npm run build
+```
+
+Builds the React app for production.
+
+```bash
+npm start
+```
+
+Starts the production Node.js server.

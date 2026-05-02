@@ -1,42 +1,57 @@
 import { createServer } from "http";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import  express  from "express";
 import { Server } from "socket.io";
 import fetch from "node-fetch";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const clientDistPath = path.join(__dirname, "client", "dist");
+const pixabayApiKey = process.env.PIXABAY_API_KEY;
+const clientOrigin = process.env.CLIENT_ORIGIN || "*";
 
 const app = express()
 const httpServer= createServer(app);
 /* server port */
-const port = 3001;
+const port = process.env.PORT || 3001;
 /* client port */
 
  const io = new Server(httpServer, {
     cors: {
-      origin: "*"
+      origin: clientOrigin
     },
-}); 
+});
 
+if (fs.existsSync(clientDistPath)) {
+  app.use("/", express.static(clientDistPath));
+}
 
-app.use("/", express.static("./client"))
+async function fetchPixabayImage(imageId, field) {
+  if (!pixabayApiKey) return undefined;
 
-//fetch external api
-const url = "https://pixabay.com/api/?key=27810659-a3dc498df919a5ca1eb2a21d3&image_type=photo&id=73424"
+  const url = `https://pixabay.com/api/?key=${pixabayApiKey}&image_type=photo&id=${imageId}`;
 
-let imageURL
-fetch(url)
-.then(res => res.json())
-.then(body=> imageURL = body.hits[0].userImageURL)
-.then(()=>console.log(imageURL)) 
-.catch(err => console.error('error:' + err)); 
+  try {
+    const response = await fetch(url);
+    const body = await response.json();
+    return body.hits?.[0]?.[field];
+  } catch (err) {
+    console.error("Pixabay fetch error:", err);
+    return undefined;
+  }
+}
 
-const url2 = "https://pixabay.com/api/?key=27810659-a3dc498df919a5ca1eb2a21d3&image_type=photo&id=2639738"
+let imageURL;
+let imageURL2;
 
-let imageURL2
-fetch(url2)
-.then(res => res.json())
-.then(body=> imageURL2 = body.hits[0].previewURL)
-.then(()=>console.log(imageURL2)) 
-.catch(err => console.error('error:' + err)); 
+fetchPixabayImage("73424", "userImageURL").then((url) => {
+  imageURL = url;
+});
+
+fetchPixabayImage("2639738", "previewURL").then((url) => {
+  imageURL2 = url;
+});
 
 
 // create user
@@ -102,13 +117,19 @@ io.on("connection", (socket) => {
     socket.on('chatMessages', (msg) =>{
    
       const user = getCurrentUser(socket.id);
+      if (!user) return;
+
       console.log(user.username, msg);
      //socket.broadcast.emit("message", msg);
-     if(msg==="/gif"){
+
+     if(msg==="/gif" && imageURL){
      io.in(user.room).emit("command", {user:user.username, url:imageURL})
      }     
-     else if(msg==="/emoji"){
+     else if(msg==="/emoji" && imageURL2){
       io.in(user.room).emit("command", {user:user.username, url:imageURL2})
+      }
+     else if(msg === "/gif" || msg === "/emoji"){
+     io.in(user.room).emit("message", formatMessage(appName, "Media commands are not configured for this demo."));
       }
      else{
      io.in(user.room).emit("message", formatMessage(user.username, msg));
@@ -133,6 +154,12 @@ io.on("connection", (socket) => {
       }
   });
 })
+
+if (fs.existsSync(path.join(clientDistPath, "index.html"))) {
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(clientDistPath, "index.html"));
+  });
+}
 
 httpServer.listen(port, () => {
     console.log("Server is running on port " + port);
